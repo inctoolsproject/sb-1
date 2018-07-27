@@ -1061,7 +1061,6 @@ def clientBot(op):
                                     settings["changevp"] = True
                                     client.sendMessage(to,"Send video~")
                             elif cmd == "gantivideo1":
-                                settings["changePictureProfile"] = True
                                 client.sendMessage(to, "Silahkan kirimkan foto")
                                 path = client.downloadObjectMsg(msg_id)
                                 client.sendMessage(to, "Silahkan kirimkan video")
@@ -1611,10 +1610,8 @@ def clientBot(op):
                             client.sendMessage(to, "Berhasil mengubah video profile")
                     elif msg.contentType == 2:
                     	if settings["changevideo"] == True:
-                            client.sendMessage(to, "send profile")
-                            path = client.downloadObjectMsg(msg_id, saveAs="tmp/pict.bin")
-                            client.sendMessage(to, "send video")
                             path = client.downloadObjectMsg(msg_id, saveAs="tmp/video.bin")
+                            path = client.downloadObjectMsg(msg_id, saveAs="tmp/pict.bin")
                             try:
                                 client.changeVideoAndPictureProfile(path)
                                 client.sendMessage(to,"Success Change Video profile~")
