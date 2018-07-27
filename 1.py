@@ -1043,6 +1043,20 @@ def clientBot(op):
                                 if settings["changevp"] == False:
                                     settings["changevp"] = True
                                     client.sendMessage(to,"Send video~")
+                            elif cmd == "changevideoprofile":
+                            	if msg.contentType == 0:
+                                    settings["changevp"] = True
+                                    client.sendMessage(to, "Send videonya")
+                                    if msg.contentType == 2:
+                                        path = client.downloadObjectMsg(msg_id,saveAs="tmp/vid.bin")
+                                        settings["changevp"] = False
+                                        settings["changePictureProfile"] = True
+                                        client.sendMessage(to, "Send gambarnya")
+                                        if msg.contentType == 1:
+                                            path = client.downloadObjectMsg(msg_id)
+                                            settings["changevp"] = False
+                                            client.updateProfileVideoPicture(path)
+                                            client.sendMessage(to, "Success, thanks to Krisnabiru")
                             elif cmd == 'mention':
                                 group = client.getGroup(msg.to)
                                 nama = [contact.mid for contact in group.members]
