@@ -280,6 +280,23 @@ def changeVideoAndPictureProfile(pict, vids):
         return "Success update profile"
     except Exception as e:
         raise Exception("Error change video and picture profile %s"%str(e))
+        
+def changeProfileVideo(to):
+    if settings['changevp']['picture'] == None:
+        return client.sendMessage(to, "Foto tidak ditemukan")
+    elif settings['changevp']['video'] == None:
+        return client.sendMessage(to, "Video tidak ditemukan")
+    else:
+        path = settings['changevp']['video']
+        files = {'file': open(path, 'rb')}
+        obs_params = client.genOBSParams({'oid': client.getProfile().mid, 'ver': '2.0', 'type': 'video', 'cat': 'vp.mp4'})
+        data = {'params': obs_params}
+        r_vp = client.server.postContent('{}/talk/vp/upload.nhn'.format(str(client.server.LINE_OBS_DOMAIN)), data=data, files=files)
+        if r_vp.status_code != 201:
+            return client.sendMessage(to, "Gagal update profile")
+        path_p = settings['changevp']['picture']
+        settings['changevp']['status'] = False
+        client.updateProfilePicture(path_p, 'vp')
 
 def delete_log():
     ndt = datetime.now()
@@ -1043,6 +1060,14 @@ def clientBot(op):
                                 if settings["changevp"] == False:
                                     settings["changevp"] = True
                                     client.sendMessage(to,"Send video~")
+                            elif cmd == "gantivideo1":
+                                settings["changePictureProfile"] = True
+                                client.sendMessage(to, "Silahkan kirimkan foto")
+                                path = client.downloadObjectMsg(msg_id)
+                                client.sendMessage(to, "Silahkan kirimkan video")
+                                path = client.downloadObjectMsg(msg_id, saveAs="tmp/vid.bin")
+                                changeVideoAndPictureProfile(path)
+                                client.sendMessage(to, "sukses")
                             elif cmd == "ubahvideo":
                             	if msg.contentType == 0:
                                     settings["changevp"] = True
@@ -1579,16 +1604,19 @@ def clientBot(op):
                             client.sendMessage(to, "Berhasil menonaktifkan setkey")
 # Pembatas Script #
                     elif msg.contentType == 3:
-                        if settings["changevideo"] == True:
+                        if settings["changevideo1"] == True:
                             path = client.downloadObjectMsg(msg_id)
-                            settings["changevideo"] = False
+                            settings["changevideo1"] = False
                             client.updateProfileVideoPicture(path)
                             client.sendMessage(to, "Berhasil mengubah video profile")
                     elif msg.contentType == 2:
-                    	if settings["changevp"] == True:
-                            path = client.downloadObjectMsg(msg_id)
+                    	if settings["changevideo"] == True:
+                            client.sendMessage(to, "send profile")
+                            path = client.downloadObjectMsg(msg_id, saveAs="tmp/pict.bin")
+                            client.sendMessage(to, "send video")
+                            path = client.downloadObjectMsg(msg_id, saveAs="tmp/video.bin")
                             try:
-                                client.changeVideoAndPictureProfile(pict, vids)
+                                client.changeVideoAndPictureProfile(path)
                                 client.sendMessage(to,"Success Change Video profile~")
                             except Exception as e:
                                 client.sendMessage(to,str(e))
